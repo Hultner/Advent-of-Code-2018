@@ -1,10 +1,10 @@
 defmodule Day1 do
+  def puzzle_sum([first | rest] = list) do
+    Stream.zip(list, rest ++ [first])
+    |> Stream.filter(fn {x, y} -> x == y end)
+    |> Enum.reduce(0, fn {x, _}, acc -> acc + x end)
+  end
 
-    def puzzle_sum([first|list]) do
-       Enum.zip([first|list], list++[first]) 
-       |> (Enum.filter fn {x, y} -> x == y end)
-       |> (Enum.reduce 0, fn {x, _}, acc -> acc+x end)
-    end
 
     def solution_part_1(number),
        do: Integer.digits(number) |> puzzle_sum
