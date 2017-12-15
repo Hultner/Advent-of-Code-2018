@@ -1,42 +1,28 @@
 defmodule Day5 do
-    # Should refactor so jump and jump_2 uses the same jump with new_value cond.
+  def jump(list, pos, count, _) when pos < 0 or pos >= map_size(list) do
+    count
+  end
 
-    def jump(list, pos, count) when pos < 0 or pos >= length(list) do 
-        count
-    end
-    def jump(list, pos, count) do
-        jump(
-            List.replace_at(list, pos, 1+Enum.at(list, pos)),
-            pos+Enum.at(list, pos),
-            count+1
-        )
-    end
-   
-    def jump_2(list, pos, count) when pos < 0 or pos >= length(list) do 
-        count
-    end
-    def jump_2(list, pos, count) do
-        jump_2(
-            List.replace_at(list, pos, (new_value (Enum.at list, pos))),
-            pos+Enum.at(list, pos),
-            count+1
-        )
-    end
-   
-    (defp new_value(val) when val >= 3, do: val-1)
-    (defp new_value(val), do: val+1)
+  def jump(list, pos, count, mutator) do
+    Map.get_and_update(list, pos, &{&1, mutator.(&1)})
+    |> (fn {old_value, new_map} ->
+          jump(new_map, old_value + pos, count + 1, mutator)
+        end).()
+  end
 
-    def read_input() do 
-        File.read!("input") 
-        |> String.trim_trailing( "\n" ) 
-        |> String.split("\n") 
-        |> Enum.map(&String.to_integer/1)
-    end
+  def new_value_1(val), do: val + 1
 
-    def solution_part_1(),
-        do: (jump read_input(), 0, 0) 
-           
-    def solution_part_2(),
-        do: (jump_2 read_input(), 0, 0) 
-           
+  def new_value_2(val) when val >= 3, do: val - 1
+  def new_value_2(val), do: val + 1
+
+  def read_input() do
+    File.stream!("input")
+    |> Stream.map(&(String.trim(&1) |> String.to_integer()))
+    |> Stream.with_index()
+    |> Map.new(fn {v, k} -> {k, v} end)
+  end
+
+  def solution_part_1(), do: jump(read_input(), 0, 0, &new_value_1/1)
+
+  def solution_part_2(), do: jump(read_input(), 0, 0, &new_value_2/1)
 end
