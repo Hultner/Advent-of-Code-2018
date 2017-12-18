@@ -4,41 +4,23 @@ defmodule Day6 do
 
   defp max_mem(mem), do: mem |> Enum.max_by(fn {n, _} -> n end)
 
-  def mem_dup({v, k}, m) do
-    if Enum.count(m, fn {mv, _} -> mv == v end) > 1 do
-      k
-    else
-      -1
-    end
-  end
-
   # Out of blocks, exit memory  distrubution cycle
-  def mem_map(mem, _pos, 0, _), do: mem
-  # Fix with rem
-  def mem_map(mem, pos, blocks, bl) when pos >= length(mem) do
-    mem_map(mem, 0, blocks, bl)
-  end
-
-  # Skippity skip blacklist
-  def mem_map(mem, pos, blocks, blist) when pos == blist do
-    mem_map(mem, pos + 1, blocks, blist)
-  end
-
-  def mem_map(mem, pos, blocks, bl) do
-    mem
-    |> List.replace_at(pos, Enum.at(mem, pos) |> (fn {v, k} -> {v + 1, k} end).())
-    |> mem_map(pos + 1, blocks - 1, bl)
+  def mem_map(mem, _pos, 0), do: mem
+  def mem_map(mem, pos, blocks) do
+    wrap_pos = rem(pos, length(mem))
+    List.replace_at(mem, wrap_pos,
+      Enum.at(mem, wrap_pos) |> (fn {v, k} -> {v + 1, k} end).()
+    )
+    |> mem_map(wrap_pos + 1, blocks - 1)
   end
 
   def reallocate(mem, alloc_set) do
     max_mem(mem)
-    |> (fn {v, k} ->
+    |> (fn {blocks, pos} ->
           mem_map(
-            List.replace_at(mem, k, {0, k}),
-            k + 1,
-            # Block at current memory page
-            v,
-            mem_dup({v, k}, mem)
+            List.replace_at(mem, pos, {0, pos}),
+            pos + 1,
+            blocks
           )
         end).()
     |> (fn new_mem ->
@@ -46,7 +28,7 @@ defmodule Day6 do
             # If the new set is a previous seen one we should return
             # {total_steps, steps_first_seen}
             Enum.count(alloc_set)
-            |> (fn stp -> {stp, stp - Map.get(alloc_set, new_mem)} end).()
+            |> (fn step -> {step, step - Map.get(alloc_set, new_mem)} end).()
           else
             # Since allocation set hasn't been seen we run another round
             reallocate(new_mem, Map.put(alloc_set, new_mem, Enum.count(alloc_set)))
@@ -56,7 +38,7 @@ defmodule Day6 do
 
   defp solv(input, part) do
     read_input(input)
-    |> (fn x -> reallocate(x, %{x => 0}) end).()
+    |> (fn init_memory -> reallocate(init_memory, %{init_memory => 0}) end).()
     |> elem(part - 1)
   end
 
