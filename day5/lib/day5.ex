@@ -4,10 +4,8 @@ defmodule Day5 do
   end
 
   def jump(list, pos, count, mutator) do
-    Map.get_and_update(list, pos, &{&1, mutator.(&1)})
-    |> (fn {old_value, new_map} ->
-          jump(new_map, old_value + pos, count + 1, mutator)
-        end).()
+    {old_value, new_map} = Map.get_and_update(list, pos, &{&1, mutator.(&1)})
+    jump(new_map, old_value + pos, count + 1, mutator)
   end
 
   def new_value_1(val), do: val + 1
