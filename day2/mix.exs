@@ -28,8 +28,7 @@ defmodule Day2.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:combination, "~> 0.0.3"},
-      {:csv, "~> 2.0.0"}
+      {:combination, "~> 0.0.3"}
     ]
   end
 end
