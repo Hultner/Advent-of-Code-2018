@@ -1,12 +1,12 @@
-defmodule Day6Test do
+defmodule Day7Test do
   use ExUnit.Case
 
-  test "Day 6: Part 1" do
-    assert Day6.solution_part_1("test_input") == 5
+  test "Day 7: Part 1" do
+    assert Day7.solution_part_1("test_input") == 5
   end
   
-  test "Day 6: Part 2" do
-    #assert Day6.jump_2([0,3,0,1,-3], 0, 0) == 10
+  test "Day 7: Part 2" do
+    assert Day7.solution_part_2("test_input") == 4
   end
   
 end

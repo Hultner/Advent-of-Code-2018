@@ -1,4 +1,4 @@
-defmodule Day6 do
+defmodule Day7 do
     
     # Read the problem wrong and then kept hacking my solution until it fit 
     # the actual problem. It works and it's fast but it isn't pretty.
